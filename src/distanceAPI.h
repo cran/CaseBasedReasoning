@@ -8,38 +8,20 @@
 #include "parallelFrameworks.h"
 
 #include "ranger/rangerForest.h"
-#include "containers/nodeDistContainer.h"
+
 
 /**
- * Distance Calculation
- */
+* Distance Calculation
+*/
 class distanceAPI {
 public:
   distanceAPI() {};
-  void init(arma::mat& x);
-  arma::vec get() {return output_;};
+  void init();
+  arma::vec calculate_distance(arma::mat& x);
   
 protected:
   void set_distance();
-  void calc(arma::mat& x);
-  
   std::shared_ptr<distance> dist_;
-  arma::vec output_;
-};
-
-
-/**
- * XY Distance Calculation
- */
-class xyDistanceAPI : public distanceAPI {
-public:
-  void init(arma::mat& x, arma::mat& y);
-  arma::mat get() {return output_;};
-  
-protected:
-  virtual void calc(arma::mat& x, arma::mat& y);
-  
-  arma::mat output_;
 };
 
 
@@ -48,21 +30,22 @@ protected:
  */
 class weightedDistanceAPI : public distanceAPI {
 public:
-  void init(arma::mat& x, arma::rowvec& weights);
+  void init(arma::rowvec& weights);
   
 protected:
-  virtual void set_distance(arma::rowvec& weights);
+  void set_distance(arma::rowvec& weights);
 };
 
 
 /**
  * Weighted XY Distance Calculation
  */
-class weightedXYDistanceAPI : public xyDistanceAPI {
+class weightedXYDistanceAPI : public distanceAPI {
 public:
-  void init(arma::mat& x, arma::mat& y, arma::rowvec& weights);
+  void init(arma::rowvec& weights);
+  arma::mat calculate_distance(arma::mat& x, arma::mat& y);
+  
 protected:
-  void calc(arma::mat& x, arma::mat& y);
   virtual void set_distance(arma::rowvec& weights);
 };
 
@@ -72,14 +55,7 @@ protected:
  */
 class rfTerminalNodeDistanceAPI : public distanceAPI {
 public:
-  void init(arma::umat& nodeIDs);
-  Rcpp::DataFrame get() {return output_.asDataFrame();};
-  
-protected:
-  void set_distance() {};
-  void calc() {};
-
-  RfDistContainer output_;
+  Rcpp::DataFrame calculate_distance(arma::umat& nodeIDs); 
 };
 
 
@@ -94,18 +70,14 @@ protected:
   void set_distance(arma::mat& x);
 };
 
+
 /**
  * RandomForests XY Proximity Matrix
  */
 class rfProximityXYDistanceAPI : public rfProximityDistanceAPI {
 public:
   void init(arma::mat& x, arma::mat& y);
-  arma::mat get() {return output_;};
-  
-protected:
-  virtual void calc(arma::mat& x, arma::mat& y);
-  
-  arma::mat output_;
+  arma::mat calculate_distance(arma::mat& x, arma::mat& y);
 };
 
 
@@ -114,11 +86,11 @@ protected:
  */
 class rfDepthDistanceAPI : public distanceAPI {
 public:
-  void init(arma::mat& xNodeIDs, arma::umat& terminalNodeIDs);
+  void init(arma::umat& terminalNodeIDs);
+  arma::vec calculate_distance(arma::mat& xNodeIDs);
   
 protected:
   void set_distance(RfDistContainer& nodeDists);
-  virtual void calc(arma::mat& xNodeIDs);
 };
 
 
@@ -127,13 +99,8 @@ protected:
  */
 class rfDepthXYDistanceAPI : public rfDepthDistanceAPI {
 public:
-  void init(arma::mat& xNodeIDs, arma::mat& yNodeIDs, arma::umat& terminalNodeIDs);
-  arma::mat get() {return output_;};
-  
-protected:
-  virtual void calc(arma::mat& xNodeIDs, arma::mat& yNodeIDs);
-  
-  arma::mat output_;
+  void init(arma::umat& terminalNodeIDs);
+  arma::mat calculate_distance(arma::mat& xNodeIDs, arma::mat& yNodeIDs);
 };
 
 #endif

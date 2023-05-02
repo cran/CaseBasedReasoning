@@ -111,6 +111,7 @@ private:
     // get terminal nodes
     hashVec tNodes = this->terminalNodes();
     std::size_t nTrees = treeIndex_.size() - 1;
+    //
     for (std::size_t t=0;t<nTrees;++t) {
       hashVec hv;
       // get for each terminal node the path to root

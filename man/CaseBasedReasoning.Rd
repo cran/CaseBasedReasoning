@@ -3,8 +3,7 @@
 \docType{package}
 \name{CaseBasedReasoning}
 \alias{CaseBasedReasoning}
-\alias{CaseBasedReasoning-package}
 \title{Case Based Reasoning}
 \description{
-Case Based Reasoning
+A R package for Case Based Reasoning using statistical/ML models.
 }

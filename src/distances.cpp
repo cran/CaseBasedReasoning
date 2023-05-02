@@ -6,15 +6,15 @@
 // [[Rcpp::export]]
 arma::vec cpp_weightedDistance(arma::mat& x, arma::rowvec& weights) {
   weightedDistanceAPI dist;
-  dist.init(x, weights);
-  return dist.get();
+  dist.init(weights);
+  return dist.calculate_distance(x);
 }
 
 // [[Rcpp::export]]
 arma::mat cpp_weightedDistanceXY(arma::mat& x, arma::mat& y, arma::rowvec& weights) {
   weightedXYDistanceAPI dist;
-  dist.init(x, y, weights);
-  return dist.get();
+  dist.init(weights);
+  return dist.calculate_distance(x, y);
 }
 
 /**
@@ -23,34 +23,34 @@ arma::mat cpp_weightedDistanceXY(arma::mat& x, arma::mat& y, arma::rowvec& weigh
 // [[Rcpp::export]]
 Rcpp::DataFrame cpp_TerminalNodeDistance(arma::umat& terminalNodeIDs) {
   rfTerminalNodeDistanceAPI dist;
-  dist.init(terminalNodeIDs);
-  return dist.get();
+  dist.init();
+  return dist.calculate_distance(terminalNodeIDs);
 }
 
 // [[Rcpp::export]]
 arma::vec cpp_proximityMatrix(arma::mat& nodeIDs) {
   rfProximityDistanceAPI dist;
   dist.init(nodeIDs);
-  return dist.get();
+  return dist.calculate_distance(nodeIDs);
 }
 
 // [[Rcpp::export]]
 arma::mat cpp_proximityMatrixRangerXY(arma::mat& xNodeIDs, arma::mat& yNodeIDs) {
   rfProximityXYDistanceAPI dist;
   dist.init(xNodeIDs, yNodeIDs);
-  return dist.get();
+  return dist.calculate_distance(xNodeIDs, yNodeIDs);
 }
 
 // [[Rcpp::export]]
 arma::vec cpp_depthMatrix(arma::mat& xNodeIDs, arma::umat& terminalNodeIDs) {
   rfDepthDistanceAPI dist;
-  dist.init(xNodeIDs, terminalNodeIDs);
-  return dist.get();
+  dist.init(terminalNodeIDs);
+  return dist.calculate_distance(xNodeIDs);
 }
 
 // [[Rcpp::export]]
 arma::mat cpp_depthMatrixRangerXY(arma::mat& xNodeIDs, arma::mat& yNodeIDs, arma::umat& terminalNodeIDs) {
   rfDepthXYDistanceAPI dist;
-  dist.init(xNodeIDs, yNodeIDs, terminalNodeIDs);
-  return dist.get();
+  dist.init(terminalNodeIDs);
+  return dist.calculate_distance(xNodeIDs, yNodeIDs);
 }

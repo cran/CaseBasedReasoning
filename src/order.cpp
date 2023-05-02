@@ -23,7 +23,7 @@ struct parallelOrderMatrix : public Worker {
   void operator() (std::size_t begin, std::size_t end) {
     arma::uvec order(x_.n_rows);
     for (std::size_t i=begin;i<end;++i) {
-      order = arma::sort_index(x_.col(i), sortDirection_);
+      order = arma::sort_index(x_.col(i), "ascend");
       for (std::size_t l=0;l<k_;++l) {
         output_(l, i) = order(l) + 1;
       }
@@ -72,7 +72,7 @@ arma::umat cpp_orderMatrix(arma::mat& x, const int sortDirection, int k = 5) {
 
 // [[Rcpp::export]]
 arma::uvec cpp_orderVector(arma::vec x, const int sortDirection, int k = 0) {
-  arma::uvec order = arma::sort_index(x, sortDirection) + 1;
+  arma::uvec order = arma::sort_index(x, "ascend") + 1;
   if (k > 0)
     order.resize(k);
   return order;

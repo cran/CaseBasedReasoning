@@ -4,8 +4,13 @@
 \alias{distanceRandomForest}
 \title{Distance calculation based on RandomForest Proximity or Depth}
 \usage{
-distanceRandomForest(x, y = NULL, rfObject, method = "Proximity",
-  threads = NULL)
+distanceRandomForest(
+  x,
+  y = NULL,
+  rfObject,
+  method = "Proximity",
+  threads = NULL
+)
 }
 \arguments{
 \item{x}{a data.frame}
@@ -14,7 +19,7 @@ distanceRandomForest(x, y = NULL, rfObject, method = "Proximity",
 
 \item{rfObject}{\code{ranger} object}
 
-\item{method}{distance calculation method}
+\item{method}{distance calculation method, Proximity (Default) or Depth.}
 
 \item{threads}{number of threads to use}
 }
@@ -26,6 +31,7 @@ observations in x vs y (if not null)
 Distance calculation based on RandomForest Proximity or Depth
 }
 \examples{
+\donttest{
 library(ranger)
 # proximity pairwise distances
 rf.fit <- ranger(Species ~ ., data = iris, num.trees = 500, write.forest = TRUE)
@@ -37,5 +43,6 @@ learn <- sample(1:150, 100)
 test <- (1:150)[-learn]
 rf.fit <- ranger(Species ~ ., data = iris[learn, ], num.trees = 500, write.forest = TRUE)
 distanceRandomForest(x = iris[learn, -5], y = iris[test, -5], rfObject = rf.fit, method = "Depth")
+}
 
 }

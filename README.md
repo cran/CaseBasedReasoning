@@ -1,194 +1,161 @@
-[![cran version](http://www.r-pkg.org/badges/version/CaseBasedReasoning)](https://cran.rstudio.com/web/packages/CaseBasedReasoning) 
-[![rstudio mirror downloads](http://cranlogs.r-pkg.org/badges/CaseBasedReasoning?)](https://cran.r-project.org/web/packages/CaseBasedReasoning/)
-[![Build Status](https://travis-ci.org/sipemu/case-based-reasoning.svg?branch=master)](https://travis-ci.org/sipemu/case-based-reasoning)
+[![cran version](http://www.r-pkg.org/badges/version/CaseBasedReasoning)](https://CRAN.R-project.org/package=CaseBasedReasoning) [![rstudio mirror downloads](http://cranlogs.r-pkg.org/badges/CaseBasedReasoning?)](https://CRAN.R-project.org/package=CaseBasedReasoning/)
 
-# Case Based Reasoning
+# Case Based Reasoning using Statistical Models
 
-The R package case-based-reasoning provides an R interface case based reasoning using machine learning.
+The R package case-based-reasoning provides an R interface case-based reasoning using machine learning methods.
+
+## Introduction: What is Case Based Reasoning?
+
+Case-Based Reasoning (CBR) is an artificial intelligence (AI) and problem-solving methodology that leverages the knowledge and experience gained from previously encountered situations, known as cases, to address new and complex problems. CBR relies on the principle that similar problems often have similar solutions, and it focuses on identifying, adapting, and reusing those solutions to solve new problems.
+
+The CBR process consists of four main steps:
+
+-   **Retrieve**: In this step, the system searches its case database to identify the most similar cases to the current problem. It uses similarity measures and pattern matching techniques to compare the features of the new problem with the existing cases.
+
+-   **Reuse**: Once the relevant cases are retrieved, the system adapts the solutions from those cases to fit the new problem. This may involve combining multiple solutions, adjusting parameters, or modifying the solution to accommodate any differences between the old and new cases.
+
+-   **Revise**: After the adapted solution has been applied to the new problem, the system evaluates the outcome to determine its effectiveness. If necessary, the solution is further revised and optimized to better suit the specific context of the problem.
+
+-   **Retain**: Finally, the new problem and its corresponding solution are added to the case database for future reference. This step enhances the system's knowledge base and improves its ability to solve similar problems in the future.
+
+CBR has been successfully applied in various domains, including medical diagnosis, legal reasoning, customer support, and design optimization. Its ability to learn from experience and adapt to new situations makes it a valuable approach in fields where expertise and problem-solving skills are crucial.
+
+In the context of observational studies, Case-Based Reasoning (CBR) can be integrated with statistical models to enhance the process of searching for similar cases, especially when dealing with large and complex datasets. By applying statistical techniques, the system can identify patterns, relationships, and associations among variables that are relevant to the problem at hand. This approach can lead to more accurate and efficient retrieval of relevant cases, ultimately improving the quality of the derived solutions (See our Vignettes).
 
 ## Installation
 
 #### CRAN
 
-```
-install.packages("CaseBasedReasoning")
-```
+    install.packages("CaseBasedReasoning")
 
 #### GITHUB
 
-```
-install.packages("devtools")
-devtools::install_github("sipemu/case-based-reasoning")
-```
+    install.packages("devtools")
+    devtools::install_github("sipemu/case-based-reasoning")
 
 ## Features
 
-This R package provides two methods case based reasoning by using an endpoint:
+This R package provides two methods case-based reasoning by using an endpoint:
 
-- Linear, logistic, and Cox regression
+-   Linear, logistic, and CPH Regression
 
-- Proximity and Depth Measure extracted from a fitted random forest ([ranger](https://github.com/imbs-hl/ranger) package)
+-   Proximity and Depth Measure extracted from a fitted random forest ([ranger](https://github.com/imbs-hl/ranger) package)
 
-Besides the functionality of searching similar cases, some additional features are included:
+Besides the functionality of searching for similar cases, we added some additional features:
 
-- automatic validation of the key variables between the query and similar cases dataset
+-   Automatic validation of the critical variables between the query and similar cases dataset
 
-- checking proportional hazard assumption for the Cox Model
+-   Checking proportional hazard assumption for the Cox Model
 
-- C++-functions for distance calculation
+-   C++-functions for distance calculation
+
+## Warning Message
+
+"Warning: Cases with missing values in the dependent variable (Y) or predictor variables (X) have been dropped from the analysis. This may lead to a reduced dataset and potential loss of information. Please review your data and consider appropriate missing value imputation techniques to mitigate these issues."
 
 
-## Example: Cox-Beta-Model
+## Example: Cox Beta Model
 
 ### Initialization
 
-In the first example, we use the Cox-Model and the `ovarian` data set from the 
-`survival` package. In the first step we initialize the R6 data object. 
+In the first example, we use the CPH model and the `ovarian` data set from the `survival` package. In the first step, we initialize the R6 data object.
 
-```
-library(tidyverse)
-library(survival)
-library(CaseBasedReasoning)
-ovarian$resid.ds <- factor(ovarian$resid.ds)
-ovarian$rx <- factor(ovarian$rx)
-ovarian$ecog.ps <- factor(ovarian$ecog.ps)
+    library(tidyverse)
+    library(survival)
+    library(CaseBasedReasoning)
+    ovarian$resid.ds = factor(ovarian$resid.ds)
+    ovarian$rx = factor(ovarian$rx)
+    ovarian$ecog.ps = factor(ovarian$ecog.ps)
 
-# initialize R6 object
-coxBeta <- CoxBetaModel$new(Surv(futime, fustat) ~ age + resid.ds + rx + ecog.ps)
-```
+    # initialize R6 object
+    cph_model = CoxModel$new(Surv(futime, fustat) ~ age + resid.ds + rx + ecog.ps, data=ovarian)
 
-### Similar Cases 
+### Similar Cases
 
-After the initialization, we may want to get for each case in the query data the most similar case from the learning data. 
+After the initialization, we may want to get for each case in the query data the most similar case from the learning data.
+
 ```{r}
 n <- nrow(ovarian)
-trainID <- sample(1:n, floor(0.8 * n), F)
-testID <- (1:n)[-trainID]
+trainID = sample(1:n, floor(0.8 * n), F)
+testID = (1:n)[-trainID]
+cph_model = CoxModel$new(Surv(futime, fustat) ~ age + resid.ds + rx + ecog.ps, data=ovarian[trainID, ])
 
 # fit model 
-ovarian[trainID, ] %>% 
-  coxBeta$fit()
+cph_model$fit()
+
 # get similar cases
-ovarian[testID, ] %>%
-  coxBeta$get_similar_cases(queryData = ovarian[testID, ], k = 3) -> matchedData
+matched_tbl = cph_model$get_similar_cases(query = ovarian[testID, ], k = 3)
 ```
 
-You may extract then the similar cases and the verum data and put them together:
+To analyze the results, you can extract the similar cases and training data and combine them:
 
-**Note 1:** In the initialization step, we dropped all cases with missing values in the variables of ` data` and ` endPoint`. So, you need to make sure that NA handling is done by you.
+-   **Note 1**: During the initialization step, all cases with missing values in the data and endPoint variables were removed. Be sure to conduct a missing value analysis beforehand.
 
-**Note 2:** The `data.table` returned from `coxBeta$get_similar_cases` has four additional columns:
+-   **Note 2**: The data.frame returned from coxBeta\$get_similar_cases contains four columns that help identify the query cases, their matches, and the distances between them:
 
-1. `caseId`: By this column you may map the similar cases to cases in data, e.g. if you had chosen ` k = 3`, then the first three elements in the column `caseId` will be ` 1` (following three ` 2` and so on). This means that this three cases are the three most similar cases to case ` 0` in verum data.
-2. `scDist`: The calculated distance
-3. `scCaseId`: Grouping number of query with matched data
-4. `group`: Grouping matched or query data
+    -   **caseId**: This column allows you to map the similar cases to cases in the data. For example, if you chose k = 3, the first three elements in the caseId column will be 1 (followed by three 2s, and so on). These three cases are the three most similar cases to case 0 in the verum data.
 
+    -   **scDist**: The calculated distance between the cases.
+
+    -   **scCaseId**: Grouping number of the query case with its matched data.
+
+    -   **group**: Grouping indicator for matched or query data.
+
+These columns help organize and interpret the results, ensuring a clear understanding of the most similar cases and their corresponding query cases.
 
 ### Distance Matrix
 
-Alternatively, you may just be interested in the distance matrix, then you go this way:
+The distance matrix is a square matrix that represents the pairwise distances between a set of data points. In the context of Case-Based Reasoning (CBR), the distance matrix captures the dissimilarities between cases in the training and test (or query) datasets, based on the fitted model and the values of the predictor variables.
+
+The distance matrix can be helpful in various situations:
+
+-   **Identifying Similar Cases**: By examining the distance matrix, you can identify the most similar cases to a given query case. Smaller distances indicate higher similarity, enabling the retrieval of relevant cases for CBR.
+
+-   **Clustering and Grouping**: The distance matrix can be used as input for clustering algorithms, such as hierarchical clustering or k-means clustering, to group cases with similar characteristics. This can provide insights into the structure and patterns within the data.
+
+-   **Visualizing Relationships**: By creating a heatmap of the distance matrix, you can visualize the relationships between cases. This representation can help identify trends and anomalies in the data, guiding further analysis and decision-making.
+
+-   **Model Validation**: The distance matrix can be used to assess the performance of the CPH regression model or other statistical models employed in the CBR process. Comparing the distance matrix for different models can help determine which model better captures the relationships between cases.
+
+In summary, a distance matrix can provide valuable insights into the relationships between cases, facilitate the identification of similar cases for CBR, and aid in the validation of the chosen statistical models.
 
 ```{r}
-ovarian %>%
-  coxBeta$calc_distance_matrix() -> distMatrix
-```
-`coxBeta$calc_distance_matrix()` calculates the full distance matrix. This matrix the dimension: cases of data versus cases of query data. If the query dataset is bot available, this functions calculates a n times n distance matrix of all pairs in data. 
-The distance matrix is saved internally in the cbrCoxModel object: ` coxBeta$distMat`.
-
-
-## Example: RandomForest-Model
-
-### Initialization 
-
-In the second example, we present the Random Forest model for a distance measure approximation applied on the `ovarian` data set from the `survival` package. This package offers two ways for distance/similarity calculation (see documentation): 
-
-- proximity
-
-- depth 
-
-Let's initialize the R6 data object. 
-
-```{r, warning=FALSE, message=FALSE}
-library(tidyverse)
-library(survival)
-library(CaseBasedReasoning)
-ovarian$resid.ds <- factor(ovarian$resid.ds)
-ovarian$rx <- factor(ovarian$rx)
-ovarian$ecog.ps <- factor(ovarian$ecog.ps)
-
-# initialize R6 object
-rfSC <- RFModel$new(Surv(futime, fustat) ~ age + resid.ds + rx + ecog.ps)
+ditance_matrix = cph_model$fit$calc_distance_matrix()
 ```
 
-All cases with missing values in the learning and end point variables are dropped (`na.omit`) and the reduced data set without missing values is saved internally. You get a text output on how many cases were dropped. `character` variables will be transformed to `factor`.
+`cph_model$calc_distance_matrix()` calculates the distance matrix between train and test data, when test data is omitted, the distances between observations in the test data is calculated. Rows are observations in train and columns observations of test. The distance matrix is saved internally in the `CoxModel` object: `cph_model$distMat`.
 
-Optionally, you may want to adjust some parameters in the fitting step of the random forest algorithm. Possible arguments are: , `ntree`, `mtry`, and `splitrule`. The documentation of this parameters can be found in the ranger R-package. Furthermore, you are able to choose the two distance measures:
-
-+ `Proximity`: the proximity matrix 
-+ `Depth` (Default): Calculates the average edge length over all trees
-
-This can be done by
-
-```{r, warning=FALSE, message=FALSE}
-rfSC$set_dist(distMethod = "Proximity")
-```
-All other steps (excluding checking for proportional hazard assumption are the same as for the Cox-Model). 
-
-
-**Similar Cases:**
-```{r}
-n <- nrow(ovarian)
-trainID <- sample(1:n, floor(0.8 * n), F)
-testID <- (1:n)[-trainID]
-
-# fit model 
-ovarian[trainID, ] %>% 
-  rfSC$fit()
-# get similar cases
-ovarian[trainID, ] %>%
-  rfSC$get_similar_cases(queryData = ovarian[testID, ], k = 3) -> matchedData
-```
-
-**Distance Matrix Calculation:**
-```{r}
-ovarian %>%
-  rfSC$calc_distance_matrix() -> distMatrix
-```
 
 ## Contribution
 
 ### Responsible for Mathematical Model Development and Programming
 
-- [PD Dr. J&uuml;rgen Dippon](http://www.isa.uni-stuttgart.de/LstStoch/Dippon/), Institut f&uuml;r Stochastik und Anwendungen, Universit&auml;t Stuttgart
+-   [PD Dr. Jürgen Dippon](https://www.isa.uni-stuttgart.de/institut/team/Dippon/), Institut für Stochastik und Anwendungen, Universität Stuttgart
 
-- [Dr. Simon M&uuml;ller](http://muon-stat.com/), TTI GmbH - MUON-STAT
+-   [Dr. Simon Müller](https://data-zoo.de/), DataZoo GmbH
 
 ### Medical Advisor
 
-- Dr. Peter Fritz
+-   Dr. Peter Fritz
 
-- Professor Dr. Friedel
-
+-   Professor Dr. Friedel
 
 ### Funding
 
-![Robert-Bosch-Stifung](inst/img/RBS_Logo.png)
-
-The work was funded by the Robert Bosch Foundation. Special thanks go to Professor Dr. Friedel ([Thoraxchirugie - Klinik Schillerhöhe](http://www.rbk.de/standorte/klinik-schillerhoehe/abteilungen/thoraxchirurgie/team.html)).
+The Robert Bosch Foundation funded this work. Special thanks go to Professor Dr. Friedel (Thoraxchirugie - Klinik Schillerhöhe).
 
 ## References
 
 ### Main
 
-- Dippon et al. [A statistical approach to case based reasoning, with application to breast cancer data](http://dl.acm.org/citation.cfm?id=608456) (2002),
+-   Dippon et al. [A statistical approach to case based reasoning, with application to breast cancer data](https://dl.acm.org/doi/10.1016/S0167-9473%2802%2900058-0) (2002),
 
-- Friedel et al. [Postoperative Survival of Lung Cancer Patients: Are There Predictors beyond TNM?](http://ar.iiarjournals.org/content/33/4/1609.short) (2012).
+-   Friedel et al. [Postoperative Survival of Lung Cancer Patients: Are There Predictors beyond TNM?](https://ar.iiarjournals.org/content/33/4/1609.short) (2012).
 
-### Other
+### Other {#other}
 
-- Englund and Verikas [A novel approach to estimate proximity in a random forest: An exploratory study](https://www.researchgate.net/publication/257404436_A_novel_approach_to_estimate_proximity_in_a_random_forest_An_exploratory_study)
+-   Englund and Verikas [A novel approach to estimate proximity in a random forest: An exploratory study](https://www.sciencedirect.com/science/article/abs/pii/S095741741200810X)
 
-- Stuart, E. et al. [Matching methods for causal inference: Designing observational studies](http://www.biostat.jhsph.edu/~estuart/StuRub_MatchingChapter_07.pdf)
+-   Stuart, E. et al. [Matching methods for causal inference: Designing observational studies](https://www.biostat.jhsph.edu/~estuart/StuRub_MatchingChapter_07.pdf)
 
-- Defossez et al. [Temporal representation of care trajectories of cancer patients using data from a regional information system: an application in breast cancer](http://www.biomedcentral.com/1472-6947/14/24)
+-   Defossez et al. [Temporal representation of care trajectories of cancer patients using data from a regional information system: an application in breast cancer](https://bmcmedinformdecismak.biomedcentral.com/articles/10.1186/1472-6947-14-24)

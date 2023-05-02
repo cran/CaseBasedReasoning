@@ -29,10 +29,6 @@ cpp_depthMatrixRangerXY <- function(xNodeIDs, yNodeIDs, terminalNodeIDs) {
     .Call(`_CaseBasedReasoning_cpp_depthMatrixRangerXY`, xNodeIDs, yNodeIDs, terminalNodeIDs)
 }
 
-weighted_knn <- function(x, query, weights, sortDirection, k) {
-    .Call(`_CaseBasedReasoning_weighted_knn`, x, query, weights, sortDirection, k)
-}
-
 cpp_orderMatrix <- function(x, sortDirection, k = 5L) {
     .Call(`_CaseBasedReasoning_cpp_orderMatrix`, x, sortDirection, k)
 }
@@ -41,7 +37,10 @@ cpp_orderVector <- function(x, sortDirection, k = 0L) {
     .Call(`_CaseBasedReasoning_cpp_orderVector`, x, sortDirection, k)
 }
 
-cpp_terminalNodeID <- function(x, childNodes1, childNodes2, splitValues, splitVarIds) {
-    .Call(`_CaseBasedReasoning_cpp_terminalNodeID`, x, childNodes1, childNodes2, splitValues, splitVarIds)
+#' @importFrom RcppParallel RcppParallelLibs
+NULL
+
+cpp_weighted_knn <- function(x, query, weights, k) {
+    .Call(`_CaseBasedReasoning_cpp_weighted_knn`, x, query, weights, k)
 }
 

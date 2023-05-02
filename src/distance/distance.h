@@ -18,10 +18,10 @@ public:
 };
 
 // weighted distance
-class weightedDistance : public distance {
+class weightedDistance final : public distance {
 public:
   virtual double calc_distance(const arma::subview_row<double>& x, const arma::subview_row<double>& y) const {
-    return std::abs(arma::sum(weights_ % (x - y)));
+    return arma::sum(arma::abs(weights_ % (x - y)));
   };
   
   void set_parameters(arma::rowvec& weights) {
@@ -52,7 +52,7 @@ private:
 };
 
 // random forest depth distance
-class rfDepthDistance : public distance {
+class rfDepthDistance final : public distance {
 public:
   virtual double calc_distance(const arma::subview_row<double>& x, const arma::subview_row<double>& y) const {
     double sum = 0.0;

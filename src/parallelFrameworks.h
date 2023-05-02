@@ -1,5 +1,7 @@
 #define STRICT_R_HEADERS
 
+//' @importFrom RcppParallel RcppParallelLibs
+
 // [[Rcpp::depends(RcppParallel)]]
 #include <RcppParallel.h>
 // [[Rcpp::depends(RcppArmadillo)]]
