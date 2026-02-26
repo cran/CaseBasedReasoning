@@ -54,8 +54,9 @@ arma::umat orderMatrix(arma::mat& x, const int sortDirection, const int k) {
   } 
   arma::umat output(nRows, nCols);
   arma::uvec order(x.n_rows);
-  for (std::size_t i; i<nCols; ++i) {
-    order = arma::sort_index(x.col(i), sortDirection);
+  const char* sortDir = (sortDirection == 0) ? "ascend" : "descend";
+  for (std::size_t i=0; i<(std::size_t)nCols; ++i) {
+    order = arma::sort_index(x.col(i), sortDir);
     for (std::size_t l=0;l<nRows;++l) {
       output(l, i) = order(l) + 1;
     }

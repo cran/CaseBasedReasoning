@@ -163,7 +163,7 @@ observations.
 For more details and a thorough explanation of the depth measure, refer
 to the publication by Englund and Verikas: "[A novel approach to
 estimate proximity in a random forest: An exploratory
-study.](https://www.sciencedirect.com/science/article/abs/pii/S095741741200810X)"
+study.](https://doi.org/10.1016/j.eswa.2012.01.157)"
 The depth measure addresses some of the limitations of the proximity
 measure by considering the tree structure and the path traversed by the
 observations, which results in a more accurate and informative distance

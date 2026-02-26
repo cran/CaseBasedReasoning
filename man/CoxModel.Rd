@@ -9,12 +9,12 @@ Cox-Beta Model for Case-Based-Reasoning
 Cox-Beta Model for Case-Based-Reasoning
 }
 \details{
-Regression beta coefficients obtained from a CPH regression model fitted on the 
+Regression beta coefficients obtained from a CPH regression model fitted on the
 training data are used for building a weighted distance measure between
-train and test data. Afterwards, we will use these weights for calculating a 
-(n x m)-distance matrix, where n is the number of observations in the training data, 
-and m is the number of observations of the test data. The user can use this 
-distance matrix for further cluster analysis or for extracting for each test observation 
+train and test data. Afterwards, we will use these weights for calculating a
+(n x m)-distance matrix, where n is the number of observations in the training data,
+and m is the number of observations of the test data. The user can use this
+distance matrix for further cluster analysis or for extracting for each test observation
 k (= 1,...,l) similar cases from the train data. We use the rms-package for model fitting,
 variable selection, and checking model assumptions.
 If the user omits the test data, this functions returns a n x n-distance matrix.

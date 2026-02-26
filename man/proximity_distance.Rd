@@ -16,7 +16,7 @@ proximity_distance(x, y = NULL, rfObject, as_dist = TRUE)
 \item{as_dist}{Bool, return a dist object.}
 }
 \value{
-a \code{dist} or a matrix object with pairwise proximity of 
+a \code{dist} or a matrix object with pairwise proximity of
 observations in x vs y (if not null)
 }
 \description{

@@ -10,7 +10,7 @@ ranger_forests_to_matrix(rfObject)
 \item{rfObject}{\code{ranger} object}
 }
 \value{
-a \code{matrix} object with 
+a \code{matrix} object with
 Column 1: tree ID
 Column 2: node ID
 Column 3: child node ID 1

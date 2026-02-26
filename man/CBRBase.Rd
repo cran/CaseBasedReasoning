@@ -22,11 +22,22 @@ Root class for common functionality of this package
 
 \item{\code{terms}}{terms of the formula}
 
-\item{\code{endPoint}}{Target variable}
+\item{\code{endpoint}}{Target variable}
 
-\item{\code{distMat}}{A matrix with distances}
+\item{\code{dist_matrix}}{A matrix with distances}
 
-\item{\code{orderMat}}{A matrix with the order indices for similar cases search}
+\item{\code{order_matrix}}{A matrix with the order indices for similar cases search}
+}
+\if{html}{\out{</div>}}
+}
+\section{Active bindings}{
+\if{html}{\out{<div class="r6-active-bindings">}}
+\describe{
+\item{\code{endPoint}}{Deprecated: use \code{endpoint} instead.}
+
+\item{\code{distMat}}{Deprecated: use \code{dist_matrix} instead.}
+
+\item{\code{orderMat}}{Deprecated: use \code{order_matrix} instead.}
 }
 \if{html}{\out{</div>}}
 }
@@ -54,7 +65,7 @@ Initialize object for searching similar cases
 \describe{
 \item{\code{formula}}{Object of class formula or character describing the model fit}
 
-\item{\code{data}}{}
+\item{\code{data}}{Training data of class data.frame}
 }
 \if{html}{\out{</div>}}
 }
@@ -68,13 +79,6 @@ Fit the Model
 \if{html}{\out{<div class="r">}}\preformatted{CBRBase$fit()}\if{html}{\out{</div>}}
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{x}}{Training data of class data.frame}
-}
-\if{html}{\out{</div>}}
-}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-CBRBase-calc_distance_matrix"></a>}}
@@ -89,8 +93,6 @@ Calculates the distance matrix
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{query}}{Query data of class data.frame}
-
-\item{\code{x}}{Training data of class data.frame}
 }
 \if{html}{\out{</div>}}
 }
@@ -101,7 +103,7 @@ Calculates the distance matrix
 \subsection{Method \code{get_similar_cases()}}{
 Extracts similar cases
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{CBRBase$get_similar_cases(query, k = 1, addDistance = T, merge = F)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{CBRBase$get_similar_cases(query, k = 1, add_distance = TRUE, merge = FALSE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -111,7 +113,7 @@ Extracts similar cases
 
 \item{\code{k}}{number of similar cases}
 
-\item{\code{addDistance}}{Add distance to result data.frame}
+\item{\code{add_distance}}{Add distance to result data.frame}
 
 \item{\code{merge}}{Add query data to matched cases data.frame}
 }

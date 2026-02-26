@@ -55,33 +55,19 @@ Prints information of the initialized object
 \subsection{Method \code{variable_selection()}}{
 Fast backward variable selection with penalization
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{RegressionModel$variable_selection(x)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{RegressionModel$variable_selection()}\if{html}{\out{</div>}}
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{x}}{Training data of class data.frame}
-}
-\if{html}{\out{</div>}}
-}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-RegressionModel-fit"></a>}}
 \if{latex}{\out{\hypertarget{method-RegressionModel-fit}{}}}
 \subsection{Method \code{fit()}}{
-Fit the RandomForest
+Fit the regression model
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{RegressionModel$fit()}\if{html}{\out{</div>}}
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{x}}{Training data of class data.frame}
-}
-\if{html}{\out{</div>}}
-}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-RegressionModel-clone"></a>}}

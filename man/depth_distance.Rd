@@ -14,14 +14,14 @@ depth_distance(x, y = NULL, rfObject)
 \item{rfObject}{\code{ranger} object}
 }
 \description{
-This function returns for each observation the pairwise sum of edges  
+This function returns for each observation the pairwise sum of edges
 between the corresponding terminal nodes over each tree in the random forest.
 }
 \examples{
 \donttest{
 require(ranger)
 rf <- ranger(Species ~ ., data = iris, num.trees = 5, write.forest = TRUE)
-depth_distance(x=iris[, -5], rfObject=rf)
+depth_distance(x = iris[, -5], rfObject = rf)
 }
 
 }

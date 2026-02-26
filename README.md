@@ -1,4 +1,9 @@
-[![cran version](http://www.r-pkg.org/badges/version/CaseBasedReasoning)](https://CRAN.R-project.org/package=CaseBasedReasoning) [![rstudio mirror downloads](http://cranlogs.r-pkg.org/badges/CaseBasedReasoning?)](https://CRAN.R-project.org/package=CaseBasedReasoning/)
+[![CRAN status](https://www.r-pkg.org/badges/version/CaseBasedReasoning)](https://CRAN.R-project.org/package=CaseBasedReasoning)
+[![CRAN downloads](https://cranlogs.r-pkg.org/badges/grand-total/CaseBasedReasoning)](https://CRAN.R-project.org/package=CaseBasedReasoning)
+[![CRAN monthly downloads](https://cranlogs.r-pkg.org/badges/CaseBasedReasoning)](https://CRAN.R-project.org/package=CaseBasedReasoning)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![R ≥ 3.5.0](https://img.shields.io/badge/R-%E2%89%A5%203.5.0-276DC3.svg?logo=r)](https://cran.r-project.org/)
+[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 
 # Case Based Reasoning using Statistical Models
 
@@ -20,7 +25,30 @@ The CBR process consists of four main steps:
 
 CBR has been successfully applied in various domains, including medical diagnosis, legal reasoning, customer support, and design optimization. Its ability to learn from experience and adapt to new situations makes it a valuable approach in fields where expertise and problem-solving skills are crucial.
 
-In the context of observational studies, Case-Based Reasoning (CBR) can be integrated with statistical models to enhance the process of searching for similar cases, especially when dealing with large and complex datasets. By applying statistical techniques, the system can identify patterns, relationships, and associations among variables that are relevant to the problem at hand. This approach can lead to more accurate and efficient retrieval of relevant cases, ultimately improving the quality of the derived solutions (See our Vignettes).
+## How This Package Implements CBR
+
+The central challenge in CBR is defining what "similar" means. This package solves the **Retrieve** step by learning a distance function from data rather than relying on ad-hoc similarity measures.
+
+The workflow follows three stages:
+
+1.  **Fit a statistical model** to the training data. The model captures which variables matter and how strongly they influence the outcome.
+2.  **Derive a distance function** from the fitted model. The model's structure determines how distance between cases is measured.
+3.  **Retrieve the k nearest cases** for each new query observation using the learned distance.
+
+The package offers two families of models for this:
+
+### Regression-based distance (Cox, linear, logistic)
+
+A regression model (Cox proportional hazards, OLS, or logistic regression via the [rms](https://CRAN.R-project.org/package=rms) package) is fitted on the training data. The estimated regression coefficients are then used as **weights** in a weighted absolute distance function. Variables with larger coefficients contribute more to the distance, while variables the model deems irrelevant contribute little. This follows the approach of Dippon et al. (2002).
+
+### Random Forest distance (proximity and depth)
+
+A random forest (via the [ranger](https://github.com/imbs-hl/ranger) package) is fitted on the training data. Two distance measures can be extracted:
+
+-   **Proximity distance**: Two observations are similar if they frequently land in the same terminal node across trees.
+-   **Depth distance**: The distance between two observations is the sum of edges between their terminal nodes across all trees in the forest, following Englund and Verikas.
+
+Both approaches produce an (n x m) distance matrix, where n is the number of training observations and m the number of query observations. This matrix can be used directly for clustering or visualization, or passed to the built-in k-nearest-neighbor search to retrieve the most similar cases.
 
 ## Installation
 
@@ -60,38 +88,40 @@ Besides the functionality of searching for similar cases, we added some addition
 
 In the first example, we use the CPH model and the `ovarian` data set from the `survival` package. In the first step, we initialize the R6 data object.
 
-    library(tidyverse)
     library(survival)
     library(CaseBasedReasoning)
-    ovarian$resid.ds = factor(ovarian$resid.ds)
-    ovarian$rx = factor(ovarian$rx)
-    ovarian$ecog.ps = factor(ovarian$ecog.ps)
+    ovarian$resid.ds <- factor(ovarian$resid.ds)
+    ovarian$rx <- factor(ovarian$rx)
+    ovarian$ecog.ps <- factor(ovarian$ecog.ps)
 
     # initialize R6 object
-    cph_model = CoxModel$new(Surv(futime, fustat) ~ age + resid.ds + rx + ecog.ps, data=ovarian)
+    cph_model <- CoxModel$new(Surv(futime, fustat) ~ age + resid.ds + rx + ecog.ps, data = ovarian)
 
 ### Similar Cases
 
 After the initialization, we may want to get for each case in the query data the most similar case from the learning data.
 
-```{r}
+```r
 n <- nrow(ovarian)
-trainID = sample(1:n, floor(0.8 * n), F)
-testID = (1:n)[-trainID]
-cph_model = CoxModel$new(Surv(futime, fustat) ~ age + resid.ds + rx + ecog.ps, data=ovarian[trainID, ])
+trainID <- sample(1:n, floor(0.8 * n), FALSE)
+testID <- (1:n)[-trainID]
+cph_model <- CoxModel$new(Surv(futime, fustat) ~ age + resid.ds + rx + ecog.ps, data = ovarian[trainID, ])
 
-# fit model 
+# fit model
 cph_model$fit()
 
 # get similar cases
-matched_tbl = cph_model$get_similar_cases(query = ovarian[testID, ], k = 3)
+matched_tbl <- cph_model$get_similar_cases(query = ovarian[testID, ], k = 3)
+
+# or use the standard S3 predict interface
+matched_tbl <- predict(cph_model, newdata = ovarian[testID, ], k = 3)
 ```
 
 To analyze the results, you can extract the similar cases and training data and combine them:
 
--   **Note 1**: During the initialization step, all cases with missing values in the data and endPoint variables were removed. Be sure to conduct a missing value analysis beforehand.
+-   **Note 1**: During the initialization step, all cases with missing values in the data and endpoint variables were removed. Be sure to conduct a missing value analysis beforehand.
 
--   **Note 2**: The data.frame returned from coxBeta\$get_similar_cases contains four columns that help identify the query cases, their matches, and the distances between them:
+-   **Note 2**: The data.frame returned from `cph_model$get_similar_cases()` contains four columns that help identify the query cases, their matches, and the distances between them:
 
     -   **caseId**: This column allows you to map the similar cases to cases in the data. For example, if you chose k = 3, the first three elements in the caseId column will be 1 (followed by three 2s, and so on). These three cases are the three most similar cases to case 0 in the verum data.
 
@@ -119,11 +149,11 @@ The distance matrix can be helpful in various situations:
 
 In summary, a distance matrix can provide valuable insights into the relationships between cases, facilitate the identification of similar cases for CBR, and aid in the validation of the chosen statistical models.
 
-```{r}
-ditance_matrix = cph_model$fit$calc_distance_matrix()
+```r
+distance_matrix <- cph_model$calc_distance_matrix()
 ```
 
-`cph_model$calc_distance_matrix()` calculates the distance matrix between train and test data, when test data is omitted, the distances between observations in the test data is calculated. Rows are observations in train and columns observations of test. The distance matrix is saved internally in the `CoxModel` object: `cph_model$distMat`.
+`cph_model$calc_distance_matrix()` calculates the distance matrix between train and test data. When test data is omitted, the distances between observations in the training data are calculated. Rows are observations in train and columns observations of test. The distance matrix is saved internally in the `CoxModel` object: `cph_model$dist_matrix`.
 
 
 ## Contribution
@@ -148,14 +178,14 @@ The Robert Bosch Foundation funded this work. Special thanks go to Professor Dr.
 
 ### Main
 
--   Dippon et al. [A statistical approach to case based reasoning, with application to breast cancer data](https://dl.acm.org/doi/10.1016/S0167-9473%2802%2900058-0) (2002),
+-   Dippon et al. [A statistical approach to case based reasoning, with application to breast cancer data](https://doi.org/10.1016/S0167-9473(02)00058-0) (2002),
 
 -   Friedel et al. [Postoperative Survival of Lung Cancer Patients: Are There Predictors beyond TNM?](https://ar.iiarjournals.org/content/33/4/1609.short) (2012).
 
 ### Other {#other}
 
--   Englund and Verikas [A novel approach to estimate proximity in a random forest: An exploratory study](https://www.sciencedirect.com/science/article/abs/pii/S095741741200810X)
+-   Englund and Verikas [A novel approach to estimate proximity in a random forest: An exploratory study](https://doi.org/10.1016/j.eswa.2012.01.157)
 
--   Stuart, E. et al. [Matching methods for causal inference: Designing observational studies](https://www.biostat.jhsph.edu/~estuart/StuRub_MatchingChapter_07.pdf)
+-   Stuart, E. et al. [Matching methods for causal inference: Designing observational studies](https://doi.org/10.4135/9781412995627.d14)
 
--   Defossez et al. [Temporal representation of care trajectories of cancer patients using data from a regional information system: an application in breast cancer](https://bmcmedinformdecismak.biomedcentral.com/articles/10.1186/1472-6947-14-24)
+-   Defossez et al. [Temporal representation of care trajectories of cancer patients using data from a regional information system: an application in breast cancer](https://doi.org/10.1186/1472-6947-14-24)

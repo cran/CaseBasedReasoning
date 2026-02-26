@@ -66,11 +66,11 @@ cph_model <- CoxModel$new(Surv(futime, fustat) ~ age + resid.ds + rx + ecog.ps, 
 
 In the preprocessing stage, all cases with missing values in the learning and endpoint variables are removed using the **`na.omit`** function, and the cleaned dataset is stored internally. A text output is provided, indicating the number of cases that were dropped due to missing values. Additionally, any character variables present in the data are converted to factor variables to ensure compatibility with subsequent statistical analyses.
 
-# Available Models {#available-models}
+# Available Models
 
 In the context of Case-Based Reasoning (CBR), linear regression, logistic regression, and Cox proportional hazards regression can be used for estimating the similarity between cases. Each of these regression methods has its own advantages and disadvantages, which are outlined below.
 
-## **Linear Regression** {#linear-regression}
+## **Linear Regression**
 
 Advantages:
 
@@ -82,7 +82,7 @@ Disadvantages:
 
 1.  Limited to continuous dependent variables: Linear regression models can only be applied to problems with continuous dependent variables, which limits their applicability in CBR scenarios.
 
-## **Logistic Regression** {#logistic-regression}
+## **Logistic Regression**
 
 Advantages:
 
@@ -94,7 +94,7 @@ Disadvantages:
 
 1.  Limited to linear relationships: Logistic regression models assume a linear relationship between the independent variables and the logit transformation of the dependent variable, which may not always hold true in real-world situations.
 
-## **Cox Proportional Hazards Regression** {#cox-proportional-hazards-regression}
+## **Cox Proportional Hazards Regression**
 
 Advantages:
 
@@ -110,7 +110,7 @@ Disadvantages:
 
 In conclusion, the choice between linear regression, logistic regression, and Cox proportional hazards regression for CBR depends on the specific problem and dataset at hand. Factors such as the type of dependent variable (continuous, binary, or time-to-event), the presence of censoring, and the need for interpretability should all be considered when selecting the most appropriate method.
 
-## **Random Forests** {#random-forests}
+## **Random Forests**
 
 Advantages:
 

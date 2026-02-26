@@ -9,14 +9,14 @@ RandomForest Model for Searching Similar Cases
 RandomForest Model for Searching Similar Cases
 }
 \details{
-This class uses the proximity or depth matrix of the RandomForest algorithm 
-as a similarity matrix of training and query 
-observations. By default all cases with at least one missing values are dropped 
+This class uses the proximity or depth matrix of the RandomForest algorithm
+as a similarity matrix of training and query
+observations. By default all cases with at least one missing values are dropped
 from learning, calculating the distance matrix and searching for similar
 cases.
 }
 \references{
-Englund and Verikas. A novel approach to estimate proximity in a random 
+Englund and Verikas. A novel approach to estimate proximity in a random
 forest: An exploratory study.
 }
 \section{Super class}{
@@ -91,13 +91,6 @@ Fit the RandomForest
 \if{html}{\out{<div class="r">}}\preformatted{RFModel$fit()}\if{html}{\out{</div>}}
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{x}}{Training data of class data.frame}
-}
-\if{html}{\out{</div>}}
-}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-RFModel-set_distance_method"></a>}}
