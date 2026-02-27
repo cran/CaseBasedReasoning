@@ -12,7 +12,7 @@
 
 <meta name="author" content="Dr. Simon Müller" />
 
-<meta name="date" content="2026-02-21" />
+<meta name="date" content="2026-02-26" />
 
 <title>Motivation</title>
 
@@ -228,7 +228,7 @@ margin-top: 5px; }</style>
 
 <h1 class="title toc-ignore">Motivation</h1>
 <h4 class="author">Dr. Simon Müller</h4>
-<h4 class="date">2026-02-21</h4>
+<h4 class="date">2026-02-26</h4>
 
 
 <div id="TOC">
@@ -256,7 +256,7 @@ proximity measure</a></li>
 Measure for Numerical and Categorical Features</h3>
 <p>Let <span class="math inline">\(x_i =
 \left(x_i^1,\cdots,x_i^p\right)^T\)</span> and <span class="math inline">\(x_j = \left(x_j^1,\cdots,x_j^p\right)^T\)</span>
-be the feature vectors of tow distinct patients <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>. A first rough idea may be to calculate
+be the feature vectors of two distinct patients <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>. A first rough idea may be to calculate
 the <span class="math inline">\(L_1-\)</span>norm of this two feature
 vectors: <span class="math display">\[
 \|x_i - x_j\|_{L_1}=\frac{1}{p}\sum\limits_{k=1}^p|x_i^k - x_j^k|
@@ -276,26 +276,9 @@ actual importance. For example, in the case of lung cancer, the
 patient’s smoking status (no/yes) seems more relevant than the city they
 live in.</p></li>
 </ol>
-<p>To address these issues, we propose a machine learning approach that
-can handle both numerical and categorical features while accounting for
-their varying importance:</p>
-<ol style="list-style-type: decimal">
-<li>For categorical features, use a distance metric such as the Gower
-distance, which can handle mixed data types. This metric assigns a
-distance of 0 for matching categories and 1 for non-matching
-categories.</li>
-<li>Normalize numerical features to make them scale-invariant. This can
-be done using min-max scaling or standardization (subtracting the mean
-and dividing by the standard deviation).</li>
-<li>Assign weights to features based on their importance in predicting
-the outcome. This can be achieved using feature selection techniques or
-by incorporating feature importance scores from machine learning models
-such as decision trees or random forests.</li>
-</ol>
-<p>By employing a machine learning approach to define the distance
-measure, we can effectively address the challenges associated with
-numerical and categorical features while accounting for their relative
-importance in the context of the problem.</p>
+<p>This package addresses these issues by deriving a weighted distance
+from regression model coefficients, which naturally handles mixed
+feature types and reflects each feature’s importance.</p>
 </div>
 <div id="weighted-distance-measure" class="section level2" number="1.1">
 <h2><span class="header-section-number">1.1</span> Weighted Distance
@@ -342,14 +325,9 @@ then</p>
 = x_j^k \text{ else } 0\]</span> and <span class="math display">\[\alpha(x_i^k, x_j^k) = \hat{\beta_k}^i -
 \hat{\beta_k}^j,\]</span></p>
 <p>where <span class="math inline">\(\hat{\beta_k}^k\)</span> are the
-coefficients of a regression model (linear, logistic, or CPH model).By
-defining the distance and weight measures in this way, we account for
-both numerical and categorical features while incorporating the relative
-importance of each feature in the model. The weights are determined
-based on the regression model’s coefficients, reflecting the impact of
-each feature on the prediction. This approach provides a more meaningful
-and interpretable distance measure for mixed data types and varying
-feature importance.</p>
+coefficients of a regression model (linear, logistic, or CPH model). The
+regression coefficients thus serve as weights that reflect each
+feature’s importance and scale.</p>
 </div>
 <div id="random-forests" class="section level1" number="3">
 <h1><span class="header-section-number">3</span> Random Forests</h1>
@@ -363,16 +341,16 @@ to one (Breiman, 2002).</p>
 \frac{1}{M}\sum\limits_{t=1}^T 1_{[x_i \text{ and } x_j \text{ share the
 same terminal node in tree } t]},\]</span> where <span class="math inline">\(M\)</span> is the number of trees that contain
 both observations and <span class="math inline">\(T\)</span> is the
-total number of trees.A drawback of this measure is that the decision is
-binary, meaning that potentially similar observations might be counted
-as dissimilar. For example, suppose a final cut-off is consistently made
-around age 58, and observation 1 has an age of 56 while observation 2
-has an age of 60. In this case, the distance between observation 1 and
-observation 2 would be the same as the distance between observation 1
-and an observation with an age of 80. This limitation makes the
-proximity measure less sensitive to small differences between
-observations, potentially affecting the overall analysis of
-similarity.</p>
+total number of trees.</p>
+<p>A drawback of this measure is that the decision is binary, meaning
+that potentially similar observations might be counted as dissimilar.
+For example, suppose a final cut-off is consistently made around age 58,
+and observation 1 has an age of 56 while observation 2 has an age of 60.
+In this case, the distance between observation 1 and observation 2 would
+be the same as the distance between observation 1 and an observation
+with an age of 80. This limitation makes the proximity measure less
+sensitive to small differences between observations, potentially
+affecting the overall analysis of similarity.</p>
 </div>
 <div id="depth-measure-a-modified-proximity-measure" class="section level2" number="3.2">
 <h2><span class="header-section-number">3.2</span> Depth Measure: A
@@ -392,11 +370,9 @@ of the trees and provides a more nuanced understanding of the similarity
 between observations.</p>
 <p>For more details and a thorough explanation of the depth measure,
 refer to the publication by Englund and Verikas: “<a href="https://doi.org/10.1016/j.eswa.2012.01.157">A novel approach to
-estimate proximity in a random forest: An exploratory study.</a>” The
-depth measure addresses some of the limitations of the proximity measure
-by considering the tree structure and the path traversed by the
-observations, which results in a more accurate and informative distance
-measure.</p>
+estimate proximity in a random forest: An exploratory study.</a>”</p>
+<p>By accounting for tree structure, the depth measure provides a more
+nuanced similarity assessment than the binary proximity measure.</p>
 </div>
 </div>
 

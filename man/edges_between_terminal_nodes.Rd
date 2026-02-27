@@ -18,7 +18,7 @@ appear in a tree -1 is inserted
 }
 \examples{
 \donttest{
-require(ranger)
+library(ranger)
 rf.fit <- ranger(Species ~ ., data = iris, num.trees = 5, write.forest = TRUE)
 edges_between_terminal_nodes(rf.fit)
 }

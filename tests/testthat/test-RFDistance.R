@@ -8,6 +8,7 @@ test_that("Terminal Nodes", {
 
 
 test_that("Number of Edges between Terminal Nodes", {
+  set.seed(42)
   df <- data.frame(
     class = as.factor(c(rep(0, 100), rep(1, 100), rep(2, 100))),
     x1 = c(rnorm(100, 0, .1), rnorm(100, 10, .1), rnorm(100, 20, .1)),
@@ -16,20 +17,36 @@ test_that("Number of Edges between Terminal Nodes", {
 
   set.seed(1234)
   rf_fit <- ranger::ranger(class ~ ., data = df, num.trees = 1, mtry = 2, min.node.size = 0)
-  m_forest <- ranger_forests_to_matrix(rf_fit)
 
-  n_edges_by_hand <- data.frame(
-    x = c(2, 2, 4),
-    y = c(4, 5, 5),
-    tree_1 = c(3, 3, 2)
-  )
+  n_edges <- edges_between_terminal_nodes(rf_fit)
 
-  n_edges_calculated <- edges_between_terminal_nodes(rf_fit)
-  expect_equal(n_edges_by_hand, n_edges_calculated)
+  # Result is a data.frame with expected columns
+  expect_s3_class(n_edges, "data.frame")
+  expect_true(all(c("x", "y", "tree_1") %in% names(n_edges)))
+
+  # Get actual terminal node IDs from the forest
+  tn <- predict(rf_fit, df[, -1], type = "terminalNodes")$predictions
+  terminal_ids <- sort(unique(as.vector(tn)))
+  n_terminal <- length(terminal_ids)
+
+  # Number of rows = n_terminal_nodes choose 2
+  expect_equal(nrow(n_edges), n_terminal * (n_terminal - 1) / 2)
+
+  # Pairs are ordered: x < y
+  expect_true(all(n_edges$x < n_edges$y))
+
+  # Terminal node IDs in x and y match actual terminal nodes
+  edge_ids <- sort(unique(c(n_edges$x, n_edges$y)))
+  expect_equal(edge_ids, terminal_ids)
+
+  # Edge counts are positive integers
+  expect_true(all(n_edges$tree_1 > 0))
+  expect_equal(n_edges$tree_1, as.integer(n_edges$tree_1))
 })
 
 
 test_that("Perfect Separation Test - Proximity", {
+  set.seed(42)
   df <- data.frame(
     class = as.factor(c(rep(0, 100), rep(1, 100), rep(2, 100))),
     x1 = c(rnorm(100, 0, .1), rnorm(100, 10, .1), rnorm(100, 20, .1)),

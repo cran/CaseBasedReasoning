@@ -1,8 +1,8 @@
 Package: CaseBasedReasoning
 Type: Package
 Title: Case Based Reasoning
-Version: 0.4
-Date: 2026-02-19
+Version: 0.4.1
+Date: 2026-02-26
 Authors@R: 
     c(person(given = "Simon",
            family = "Mueller",
@@ -16,8 +16,8 @@ Description: Case-based reasoning is a problem-solving methodology that involves
 URL: https://github.com/sipemu/case-based-reasoning
 BugReports: https://github.com/sipemu/case-based-reasoning/issues
 License: MIT + file LICENSE
-Depends: Rcpp, RcppParallel, rms
-Imports: R6, ranger, survival, ggplot2
+Depends: rms
+Imports: R6, Rcpp, RcppParallel, ranger, survival, ggplot2
 Suggests: testthat, knitr, rmarkdown, RcppArmadillo, patchwork
 LinkingTo: Rcpp, RcppArmadillo, RcppParallel
 SystemRequirements: GNU make
@@ -26,9 +26,9 @@ ByteCompile: yes
 VignetteBuilder: knitr
 Encoding: UTF-8
 RoxygenNote: 7.3.3
-Packaged: 2026-02-21 14:42:51 UTC; simonm
+Packaged: 2026-02-26 22:44:19 UTC; simonm
 Author: Simon Mueller [aut, cre],
   PD Dr. Juergen Dippon [ctb]
 Maintainer: Simon Mueller <simon.mueller@muon-stat.com>
 Repository: CRAN
-Date/Publication: 2026-02-26 08:50:08 UTC
+Date/Publication: 2026-02-27 07:30:02 UTC

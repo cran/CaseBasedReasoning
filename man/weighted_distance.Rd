@@ -24,7 +24,7 @@ Weighted Distance calculation
 }
 \examples{
 \donttest{
-require(ranger)
+library(ranger)
 rf <- ranger(Species ~ ., data = iris, num.trees = 5, write.forest = TRUE)
 terminal_nodes(iris[, -5], rf)
 }

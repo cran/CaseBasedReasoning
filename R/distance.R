@@ -58,7 +58,7 @@ distance_random_forest <- function(x, y = NULL, rfObject, method = "Proximity", 
 #'
 #' @examples
 #' \donttest{
-#' require(ranger)
+#' library(ranger)
 #' rf <- ranger(Species ~ ., data = iris, num.trees = 5, write.forest = TRUE)
 #' proximity_distance(x = iris[, -5], rfObject = rf)
 #'
@@ -100,7 +100,7 @@ proximity_distance <- function(x, y = NULL, rfObject, as_dist = TRUE) {
 #'
 #' @examples
 #' \donttest{
-#' require(ranger)
+#' library(ranger)
 #' rf <- ranger(Species ~ ., data = iris, num.trees = 5, write.forest = TRUE)
 #' depth_distance(x = iris[, -5], rfObject = rf)
 #' }
@@ -133,7 +133,7 @@ depth_distance <- function(x, y = NULL, rfObject) {
 #'
 #' @examples
 #' \donttest{
-#' require(ranger)
+#' library(ranger)
 #' rf.fit <- ranger(Species ~ ., data = iris, num.trees = 5, write.forest = TRUE)
 #' edges_between_terminal_nodes(rf.fit)
 #' }
@@ -156,7 +156,7 @@ edges_between_terminal_nodes <- function(rfObject) {
 #'
 #' @examples
 #' \donttest{
-#' require(ranger)
+#' library(ranger)
 #' rf <- ranger(Species ~ ., data = iris, num.trees = 5, write.forest = TRUE)
 #' terminal_nodes(iris[, -5], rf)
 #' }

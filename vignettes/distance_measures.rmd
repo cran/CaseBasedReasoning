@@ -25,7 +25,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ### Define a Distance Measure for Numerical and Categorical Features {#define-a-distance-measure-for-numerical-and-categorical-features}
 
 Let $x_i = \left(x_i^1,\cdots,x_i^p\right)^T$ and
-$x_j = \left(x_j^1,\cdots,x_j^p\right)^T$ be the feature vectors of tow
+$x_j = \left(x_j^1,\cdots,x_j^p\right)^T$ be the feature vectors of two
 distinct patients $i$ and $j$. A first rough idea may be to calculate
 the $L_1-$norm of this two feature vectors: $$
 \|x_i - x_j\|_{L_1}=\frac{1}{p}\sum\limits_{k=1}^p|x_i^k - x_j^k|
@@ -47,26 +47,7 @@ However, this naive approach arises from some problems:
     smoking status (no/yes) seems more relevant than the city they live
     in.
 
-To address these issues, we propose a machine learning approach that can
-handle both numerical and categorical features while accounting for
-their varying importance:
-
-1.  For categorical features, use a distance metric such as the Gower
-    distance, which can handle mixed data types. This metric assigns a
-    distance of 0 for matching categories and 1 for non-matching
-    categories.
-2.  Normalize numerical features to make them scale-invariant. This can
-    be done using min-max scaling or standardization (subtracting the
-    mean and dividing by the standard deviation).
-3.  Assign weights to features based on their importance in predicting
-    the outcome. This can be achieved using feature selection techniques
-    or by incorporating feature importance scores from machine learning
-    models such as decision trees or random forests.
-
-By employing a machine learning approach to define the distance measure,
-we can effectively address the challenges associated with numerical and
-categorical features while accounting for their relative importance in
-the context of the problem.
+This package addresses these issues by deriving a weighted distance from regression model coefficients, which naturally handles mixed feature types and reflects each feature's importance.
 
 ## Weighted Distance Measure {#weighted-distance-measure}
 
@@ -114,13 +95,8 @@ $$d(x_i^k, x_j^k) = 1 \text{ when } x_i^k = x_j^k \text{ else } 0$$ and
 $$\alpha(x_i^k, x_j^k) = \hat{\beta_k}^i - \hat{\beta_k}^j,$$
 
 where $\hat{\beta_k}^k$ are the coefficients of a regression model
-(linear, logistic, or CPH model).By defining the distance and weight
-measures in this way, we account for both numerical and categorical
-features while incorporating the relative importance of each feature in
-the model. The weights are determined based on the regression model's
-coefficients, reflecting the impact of each feature on the prediction.
-This approach provides a more meaningful and interpretable distance
-measure for mixed data types and varying feature importance.
+(linear, logistic, or CPH model). The regression coefficients thus serve
+as weights that reflect each feature's importance and scale.
 
 # Random Forests {#random-forests}
 
@@ -132,7 +108,9 @@ node is close to one (Breiman, 2002).
 
 $$d(x_i, x_j)^2 = 1 - \frac{1}{M}\sum\limits_{t=1}^T 1_{[x_i \text{ and } x_j \text{ share the same terminal node in tree } t]},$$
 where $M$ is the number of trees that contain both observations and $T$
-is the total number of trees.A drawback of this measure is that the
+is the total number of trees.
+
+A drawback of this measure is that the
 decision is binary, meaning that potentially similar observations might
 be counted as dissimilar. For example, suppose a final cut-off is
 consistently made around age 58, and observation 1 has an age of 56
@@ -164,7 +142,6 @@ For more details and a thorough explanation of the depth measure, refer
 to the publication by Englund and Verikas: "[A novel approach to
 estimate proximity in a random forest: An exploratory
 study.](https://doi.org/10.1016/j.eswa.2012.01.157)"
-The depth measure addresses some of the limitations of the proximity
-measure by considering the tree structure and the path traversed by the
-observations, which results in a more accurate and informative distance
-measure.
+
+By accounting for tree structure, the depth measure provides a more
+nuanced similarity assessment than the binary proximity measure.

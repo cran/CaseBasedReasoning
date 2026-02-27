@@ -24,7 +24,7 @@ Get proximity matrix of an ranger object
 }
 \examples{
 \donttest{
-require(ranger)
+library(ranger)
 rf <- ranger(Species ~ ., data = iris, num.trees = 5, write.forest = TRUE)
 proximity_distance(x = iris[, -5], rfObject = rf)
 

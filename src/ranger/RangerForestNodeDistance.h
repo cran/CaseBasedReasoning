@@ -80,7 +80,7 @@ private:
       Rcpp::NumericVector ind;
       for (std::size_t i=treeIndex_(t);i<treeIndex_(t+1);++i) {
         if (nodeIDs_.col(2)(i) == 0) {
-          ind.push_back(i - treeIndex_(t) + 1);
+          ind.push_back(i - treeIndex_(t));
         }
       }
       treeTerminalNodes[t + 1] = Rcpp::as<arma::uvec>(Rcpp::wrap(ind));
@@ -117,7 +117,7 @@ private:
       hashVec hv;
       // get for each terminal node the path to root
       for (auto tn : tNodes[t + 1]) {
-        hv[tn] = this->pathToRoot(nodes[t + 1], tn);
+        hv[tn] = this->pathToRoot(nodes[t + 1], tn + 1);
       }
       hp_[t + 1] = hv;
     }
